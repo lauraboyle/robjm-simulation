@@ -1,5 +1,5 @@
 
-simulate_data_tt_mod3 <- function(nsubj, av_n_i = 5, phi, delta , returns = c("repeat_data", "base_data")){
+simulate_data_tt_mod3 <- function(nsubj, av_n_i = 5, gamma, phi, delta , returns = c("repeat_data", "base_data")){
   
   ### nsubj: number of subjects
   ### delta: the parameter that controls informative visit process
@@ -66,7 +66,7 @@ simulate_data_tt_mod3 <- function(nsubj, av_n_i = 5, phi, delta , returns = c("r
   theta <- 0.04
   phi   <- 1.2
   omega <- matrix(0, ncol = 1, nrow = 1)
-  gamma <- 0.3
+  #gamma <- 0.3
   
   # survival model covariates
   c <- matrix(rep(0, ntotal))

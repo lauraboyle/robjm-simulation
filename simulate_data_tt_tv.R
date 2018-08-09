@@ -1,5 +1,6 @@
 simulate_data_tt_tv <- function(nsubj, 
                                 av_n_i = 5, 
+                                gamma,
                                 phi, 
                                 delta0,
                                 beta,
@@ -79,7 +80,7 @@ simulate_data_tt_tv <- function(nsubj,
   theta <- 0.04
   phi   <- 1.2
   omega <- matrix(0.5, ncol = 1, nrow = 1)
-  gamma <- 0.3
+  #gamma <- 0.3
   
   # survival model covariates
   
