@@ -20,21 +20,27 @@
  
  # number of subjects for modelling and external validation
  nsubj  <- 100
- av_n_i <- 5
  phi    <- 4
  delta0 <- 6
  beta <- c(-2, 1, 3)
+ gamma <- 0.3
  
  # simulate data to be used for parameter estimation
 # simulated_data <- simulate_data(nsubj = nsubj, av_n_i = av_n_i, returns = c("repeat_data", "base_data"))
 # simulated_data_tt_mod3 <- simulate_data_tt_mod3(nsubj = nsubj, av_n_i = av_n_i, phi=phi, delta=delta, returns = c("repeat_data", "base_data"))
- simulated_data <- simulate_data_tt_tv(nsubj = nsubj, av_n_i = av_n_i, phi=phi, delta=delta, returns = c("repeat_data", "base_data"))
+ simulated_data <- simulate_data_tt_tv(nsubj = nsubj, 
+                                       av_n_i = av_n_i, 
+                                       phi = phi, 
+                                       gamma = gamma,
+                                       delta0 = delta0, 
+                                       beta = beta,
+                                       returns = c("repeat_data", "base_data"))
  
  # mixed-model
  lme_fit <- lme(fixed = Y ~ time, random = ~ time|id, data = simulated_data$repeat_data)
  summary(lme_fit)
  
- cox_fit <- coxph(Surv(stime, event) ~ 1, data = simulated_data$base_data, x = T)
+ cox_fit <- coxph(Surv(stime, event) ~ c, data = simulated_data$base_data, x = T)
  summary(cox_fit)
  
  joint_fit <- jointModel(lme_fit, cox_fit, timeVar = "time",method = "weibull-PH-aGH",
@@ -54,7 +60,7 @@
  
  
  
-# fit using robjm 
+ # fit using robjm 
  stime<-simulated_data$base_data$stime
  event<-simulated_data$base_data$event
  library(robjm)

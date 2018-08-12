@@ -4,6 +4,10 @@ simulate_data_tt_tv <- function(nsubj,
                                 phi, 
                                 delta0,
                                 beta,
+                                controls_time = c(t_min = 0, t_max = 5, a = 0.01),
+                                alpha = matrix(c(1, 0.5), ncol = 1),
+                                Sigma = matrix(c(0.6, 0.25, 0.25, 0.3), ncol = 2),
+                                tau = sqrt(0.25),
                                 returns = c("repeat_data", "base_data")){
   
   ### nsubj: number of subjects
@@ -11,9 +15,9 @@ simulate_data_tt_tv <- function(nsubj,
   ### return: names of the objects to be returned
   
   # discretise time at fine intervals
-  t_min <- 0
-  t_max <- 5
-  a     <- 0.01
+  t_min <- controls_time["t_min"]
+  t_max <- controls_time["t_max"]
+  a     <- controls_time["a"]
   t     <- seq(t_min, t_max, a)
   m     <- length(t)
   
@@ -21,13 +25,13 @@ simulate_data_tt_tv <- function(nsubj,
   ntotal <- m * nsubj
   
   # longitudinal fixed effects regression parameters
-  alpha <- matrix(c(1, 0.5), ncol = 1)
+  #alpha <- matrix(c(1, 0.5), ncol = 1)
   
   # var-cov matrix of random intercept and slope
-  Sigma <- matrix(c(0.6, 0.25, 0.25, 0.3), ncol = 2) 
+  #Sigma <- matrix(c(0.6, 0.25, 0.25, 0.3), ncol = 2)
   
   # measurement error standard deviation
-  tau <- sqrt(0.25)
+  #tau <- sqrt(0.25)
   
   # longitudinal fixed-effects covariate matrix
   x <- cbind(1, rep(t, nsubj)) 
@@ -77,8 +81,8 @@ simulate_data_tt_tv <- function(nsubj,
   )
   
   # survival process parameters
-  theta <- 0.04
-  phi   <- 1.2
+  theta_surv <- 0.04
+  phi_surv   <- 1.2
   omega <- matrix(0.5, ncol = 1, nrow = 1)
   #gamma <- 0.3
   
@@ -96,7 +100,7 @@ simulate_data_tt_tv <- function(nsubj,
   # c<-binary
   
   # hazard and survival probabilities
-  data$hazard <- as.numeric(with(data, theta * phi * time^(phi - 1) * exp(c %*% omega + gamma * Y_star)))
+  data$hazard <- as.numeric(with(data, theta_surv * phi_surv * time^(phi_surv - 1) * exp(c %*% omega + gamma * Y_star)))
   a_vec <- c(1, rep(a, (m - 1)))
   data$surv_prob <- unlist(with(data, tapply(hazard, id, function(x) exp(- unlist(lapply(1:m, function(i) sum(a_vec[1:i] * x[1:i])))))))
   
