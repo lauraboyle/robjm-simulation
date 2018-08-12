@@ -61,8 +61,6 @@
  
  
  # fit using robjm 
- stime<-simulated_data$base_data$stime
- event<-simulated_data$base_data$event
  library(robjm)
  fit_nor_nor <- fit_jm(fixed_long = Y ~ time, 
                        random_long = ~ time, 
@@ -80,8 +78,6 @@
  )
  print(fit_nor_nor, pars = c("alpha", "Sigma", "sigmasq", "zeta", "omega", "eta"))
 
- stime<-simulated_data$base_data$stime
- event<-simulated_data$base_data$event
  fit_t_t_tv <- fit_jm(fixed_long = Y ~ time, 
                       random_long = ~ time,  
                       fixed_surv = cbind(stime, event)~c, 
