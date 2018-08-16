@@ -20,16 +20,17 @@
  
  # number of subjects for modelling and external validation
  nsubj  <- 100
- phi    <- 4
- delta0 <- 6
- beta <- c(-2, 1, 3)
+ phi    <- 6
+ delta0 <- 12
+ beta <- c(0, 0 , 0)
  gamma <- 0.3
  
  # simulate data to be used for parameter estimation
-# simulated_data <- simulate_data(nsubj = nsubj, av_n_i = av_n_i, returns = c("repeat_data", "base_data"))
-# simulated_data_tt_mod3 <- simulate_data_tt_mod3(nsubj = nsubj, av_n_i = av_n_i, phi=phi, delta=delta, returns = c("repeat_data", "base_data"))
+ # simulated_data <- simulate_data(nsubj = nsubj, 
+ #                                gamma = gamma,
+ #                                returns = c("repeat_data", "base_data"))
+ # simulated_data_tt_mod3 <- simulate_data_tt_mod3(nsubj = nsubj, av_n_i = av_n_i, phi=phi, delta=delta, returns = c("repeat_data", "base_data"))
  simulated_data <- simulate_data_tt_tv(nsubj = nsubj, 
-                                       av_n_i = av_n_i, 
                                        phi = phi, 
                                        gamma = gamma,
                                        delta0 = delta0, 
@@ -37,14 +38,25 @@
                                        returns = c("repeat_data", "base_data"))
  
  # mixed-model
- lme_fit <- lme(fixed = Y ~ time, random = ~ time|id, data = simulated_data$repeat_data)
+ lme_fit <- lme(fixed = Y ~ time, 
+                random = ~ time|id, 
+                data = simulated_data$repeat_data
+                )
  summary(lme_fit)
  
- cox_fit <- coxph(Surv(stime, event) ~ c, data = simulated_data$base_data, x = T)
+ cox_fit <- coxph(Surv(stime, event) ~ c, 
+                  data = simulated_data$base_data, 
+                  x = T
+                  )
  summary(cox_fit)
  
- joint_fit <- jointModel(lme_fit, cox_fit, timeVar = "time",method = "weibull-PH-aGH",
-                         verbose = T, iter.EM = 1000)
+ joint_fit <- jointModel(lme_fit, 
+                         cox_fit, 
+                         timeVar = "time",
+                         method = "weibull-PH-aGH",
+                         verbose = T, 
+                         iter.EM = 1000
+                         )
  summary(joint_fit)
  
  g <- ggplot(simulated_data$repeat_data, aes(time, Y, group = id))
@@ -58,39 +70,43 @@
  km_fit <- survfit(Surv(stime, event) ~ 1, data = simulated_data$base_data)
  ggsurvplot(km_fit, data = simulated_data$base_data, risk.table = TRUE)
  
- 
- 
  # fit using robjm 
  library(robjm)
  fit_nor_nor <- fit_jm(fixed_long = Y ~ time, 
                        random_long = ~ time, 
-                       fixed_surv = cbind(stime, event)~c, 
+                       fixed_surv = cbind(stime, event) ~ c, 
                        data_long = simulated_data$repeat_data,
                        data_surv = simulated_data$base_data,
                        id_long = "id",
                        id_surv = "id",
                        model = "nor_nor",
+                       timeVar = "time",
                        chains = 2,
-                       cores=2,
+                       cores = 2,
                        iter = 2000,
                        warmup = 1000,
-                       control = list(adapt_delta = 0.99)
- )
- print(fit_nor_nor, pars = c("alpha", "Sigma", "sigmasq", "zeta", "omega", "eta"))
+                       control = list(adapt_delta = 0.8)
+                       )
+ print(fit_nor_nor, 
+       pars = c("alpha", "Sigma", "sigmasq", "zeta", "omega", "eta")
+       )
 
- fit_t_t_tv <- fit_jm(fixed_long = Y ~ time, 
+ fit_t_t_mod3 <- fit_jm(fixed_long = Y ~ time, 
                       random_long = ~ time,  
-                      fixed_surv = cbind(stime, event)~c, 
+                      fixed_surv = cbind(stime, event) ~ c, 
                       data_long = simulated_data$repeat_data,
                       data_surv = simulated_data$base_data,
                       id_long = "id",
                       id_surv = "id",
-                      model = "t_t_tv",
-                      spline_tv = list("time", 2), 
+                      model = "t_t_mod3",
+                      #spline_tv = list("time", 2), 
                       chains = 2,
+                      cores = 2,
                       iter = 2000,
                       warmup = 1000,
                       control = list(adapt_delta = 0.99)
- )
- print(fit_t_t_tv, pars = c("alpha", "Sigma", "phi", "sigmasq", "delta0", "beta", "zeta", "omega", "eta")) 
+                      )
+ print(fit_t_t_mod3, 
+       pars = c("alpha", "Sigma", "phi", "sigmasq", "delta", "zeta", "omega", "eta")
+       ) 
  
