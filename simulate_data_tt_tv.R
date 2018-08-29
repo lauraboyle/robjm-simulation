@@ -4,6 +4,9 @@ simulate_data_tt_tv <- function(nsubj,
                                 phi, 
                                 delta0,
                                 beta,
+                                theta_surv = 0.04,
+                                phi_surv = 1.2,
+                                omega = matrix(0.5, ncol = 1, nrow = 1),
                                 controls_time = c(t_min = 0, t_max = 5, a = 0.01),
                                 alpha = matrix(c(1, 0.5), ncol = 1),
                                 Sigma = matrix(c(0.6, 0.25, 0.25, 0.3), ncol = 2),
@@ -81,9 +84,9 @@ simulate_data_tt_tv <- function(nsubj,
   )
   
   # survival process parameters
-  theta_surv <- 0.04
-  phi_surv   <- 1.2
-  omega <- matrix(0.5, ncol = 1, nrow = 1)
+  # theta_surv <- 0.04
+  # phi_surv   <- 1.2
+  # omega <- matrix(0.5, ncol = 1, nrow = 1)
   #gamma <- 0.3
   
   # survival model covariates
@@ -91,14 +94,7 @@ simulate_data_tt_tv <- function(nsubj,
   #
   c <- matrix(rep(rbinom(nsubj, 1, 0.5), each = m))
   data$c <- as.numeric(c)
-  # binary<-c()
-  # for (i in 1:ntotal){
-  #   bin<-runif(1,0,1)
-  #   bin_round<-round(bin,0)
-  #   binary[i]<-bin_round
-  # }
-  # c<-binary
-  
+
   # hazard and survival probabilities
   data$hazard <- as.numeric(with(data, theta_surv * phi_surv * time^(phi_surv - 1) * exp(c %*% omega + gamma * Y_star)))
   a_vec <- c(1, rep(a, (m - 1)))

@@ -20,9 +20,9 @@
  
  # number of subjects for modelling and external validation
  nsubj  <- 100
- phi    <- 6
- delta0 <- 12
- beta <- c(0, 0 , 0)
+ phi    <- 100
+ delta0 <- 100
+ beta <- c(0, 0, 0)
  gamma <- 0.3
  
  # simulate data to be used for parameter estimation
